@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title>상품리스트</title>
+</th:block>
+<th:block layout:fragment="customScript">
+<script type="text/javascript" src="./jquery-3.4.1.min.js"> </script>
+	<script type="text/javascript">
+		function delcheck(){
+		    return confirm("상품을 삭제하시겠습니까?");
+		};
+		
+		
+		
+	</script>
+</th:block>
+<th:block layout:fragment="customContents">
+	<form th:action="@{/goodsList}" method="post"><!-- 타임리프로 안해도됨 -->
+		<select name="sk">
+			<option value="g_code">상품코드</option>
+			<option value="m_id">아이디</option>
+			<option value="g_name">상품명</option>
+			<option value="g_cate">카테고리</option>
+			<option value="g_price">가격</option>
+			<option value="g_color">색상</option>
+			<option value="g_size">사이즈</option>
+			<option value="g_desc">설명</option>
+		</select>
+		<input type="text" name="sv">
+		<input type="date" name="date" id="fromDate">
+		<input type="date" name="date" id="toDate">
+		<input type="submit" value="검색" />
+	</form>
+	<table border="1">
+		<thead>
+			<tr>
+				<th>상품코드</th>
+				<th>아이디</th>
+				<th>상품명</th>
+				<th>카테고리</th>
+				<th>가격</th>
+				<th>색상</th>
+				<th>사이즈</th>
+				<th>설명</th>
+				<th>등록일</th>
+				<th th:if="${session.SLEVEL eq '관리자' or session.SLEVEL eq '판매자'}" >수정</th>
+				<th th:if="${session.SLEVEL eq '관리자' or session.SLEVEL eq '판매자'}" >삭제</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="l: ${goodsList}">
+				<td th:text="${l.gCode}"></td>
+				<td th:text="${l.mId}"></td>
+				<td th:text="${l.gName}"></td>
+				<td th:text="${l.gCate}"></td>
+				<td th:text="${l.gPrice}"></td>
+				<td th:text="${l.gColor}"></td>
+				<td th:text="${l.gSize}"></td>
+				<td th:text="${l.gDesc}"></td>
+				<td th:text="${l.gDate}"></td>
+				<td th:if="${session.SLEVEL eq '관리자' or session.SLEVEL eq '판매자'}" ><a th:href="@{/goodsUpdate(gCode=${l.gCode})}">수정</a></td>
+				<td th:if="${session.SLEVEL eq '관리자' or session.SLEVEL eq '판매자'}" ><a th:href="@{/goodsDelete(gCode=${l.gCode})}" onclick="return delcheck()">삭제</a></td>
+			</tr>
+		</tbody>
+	</table>
+
+</th:block>
+</html>

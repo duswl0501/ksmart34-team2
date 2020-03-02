@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="kr.or.ksmart.springboot34_mybatis.mapper.GoodsMapper">
+	<!-- resultMap 을 효율적으로 사용하기 위함 -->
+	<resultMap type="kr.or.ksmart.springboot34_mybatis.domain.Goods" id="goodsResultMap">
+		<result property="gCode" column="g_code" />
+		<result property="mId" column="m_id" />
+		<result property="gName" column="g_name" />
+		<result property="gCate" column="g_cate" />
+		<result property="gPrice" column="g_price" />
+		<result property="gColor" column="g_color" />
+		<result property="gSize" column="g_size" />
+		<result property="gDesc" column="g_desc" />
+		<result property="gDate" column="g_date" />
+	</resultMap>
+
+	<!-- 상품 삭제 -->
+	<delete id="gDelete" parameterType="kr.or.ksmart.springboot34_mybatis.domain.Goods">
+		DELETE
+		FROM
+		tb_goods
+		WHERE
+		g_code=#{gCode};
+	</delete>
+
+	<!-- 상품 정보 수정 -->
+	<update id="gUpdate" parameterType="kr.or.ksmart.springboot34_mybatis.domain.Goods">
+		UPDATE tb_goods
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="gCode neq null and gCode neq ''.toString()">
+				g_code=#{gCode}
+			</if>
+			<if test="gName neq null and gName neq ''.toString()">
+				,g_name = #{gName}
+			</if>
+			<if test="gCate neq null and gCate neq ''.toString()">
+				,g_cate = #{gCate}
+			</if>
+			<if test="gPrice neq null and gPrice neq ''.toString()">
+				,g_price = #{gPrice}
+			</if>
+			<if test="gColor neq null and gColor neq ''.toString()">
+				,g_color = #{gColor}
+			</if>
+			<if test="gSize neq null and gSize neq ''.toString()">
+				,g_size = #{gSize}
+			</if>
+			<if test="gDesc neq null and gDesc neq ''.toString()">
+				,g_desc = #{gDesc}
+			</if>
+			<if test="gDate neq null and gDate neq ''.toString()">
+				,g_date = #{gDate}
+			</if>
+		</trim>
+		WHERE
+		g_code = #{gCode};
+	</update>
+
+
+	<!-- 한 개 상품정보 조회 -->
+	<select id="selectForUpdate" parameterType="String"
+		resultMap="goodsResultMap">
+		SELECT
+		g_code
+		,m_id
+		,g_name
+		,g_cate
+		,g_price
+		,g_color
+		,g_size
+		,g_desc
+		,g_date
+		FROM
+		tb_goods
+		WHERE
+		g_code = #{gCode};
+
+	</select>
+
+	<!--상품 등록 -->
+	<insert id="gInsert"
+		parameterType="kr.or.ksmart.springboot34_mybatis.domain.Goods">
+		<selectKey keyProperty="gCode" resultType="String"
+			order="BEFORE">
+
+			SELECT
+				CASE
+					WHEN
+						MAX(g_code) LIKE 'goods_%'
+					THEN
+						CONCAT('goods_', SUBSTRING(max(g_code),7)+1)
+					ELSE
+						ifnull (g_code, 'goods_1')
+				END AS gCode
+			FROM
+				tb_goods
+
+		</selectKey>
+		INSERT INTO tb_goods
+		(g_code
+		, m_id
+		, g_name
+		, g_cate
+		, g_price
+		, g_color
+		, g_size
+		, g_desc
+		, g_date
+		)VALUES (
+		#{gCode}
+		,#{mId}
+		,#{gName}
+		,#{gCate}
+		,#{gPrice}
+		,#{gColor}
+		,#{gSize}
+		,#{gDesc}
+		,now());
+	</insert>
+
+	<select id="getSearchGoodsList" parameterType="String" resultMap = "goodsResultMap">
+		SELECT
+			g_code
+			,m_id
+			,g_name
+			,g_cate
+			,g_price
+			,g_color
+			,g_size
+			,g_desc
+			,g_date
+		FROM
+			tb_goods
+		WHERE
+			${sk} LIKE CONCAT ('%',#{sv},'%');
+		
+	
+	</select>
+	
+	
+	<!-- 전체 상품 리스트 조회 -->
+	<select id="getGoodslist"
+		resultType="kr.or.ksmart.springboot34_mybatis.domain.Goods">
+		SELECT
+		g_code AS gCode
+		,m_id AS mId
+		,g_name AS gName
+		,g_cate AS gCate
+		,g_price AS gPrice
+		,g_color AS gColor
+		,g_size AS gSize
+		,g_desc AS gDesc
+		,g_date AS gDate
+		FROM
+		tb_goods;
+	</select>
+</mapper>
